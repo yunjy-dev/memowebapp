@@ -68,8 +68,10 @@
           https://firebase.google.com/docs/web/setup#available-libraries -->
       <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
 
-      <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-auth.js"></script>
       <!-- <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script> -->
+      <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-auth.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-database.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-firestore.js"></script>
 
       <script>
         // Your web app's Firebase configuration
@@ -88,7 +90,8 @@
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
         
-        var auth;
+        //Auth
+        var auth, userInfo;
         auth = firebase.auth();
         var authProvider = new firebase.auth.GoogleAuthProvider();
         // auth.signInWithPopup(authProvider);
@@ -97,6 +100,8 @@
             //auth success
             console.log("auth success");
             console.log(user);
+            userInfo = user;
+            get_memo_list();
 
           } else {
             //auth failed
@@ -106,6 +111,48 @@
           }
         })
 
+        //database
+        var database;
+        database = firebase.database();
+
+        function get_memo_list(){
+          console.log('get_memo_list');
+          var memoRef = database.ref('memos/'+userInfo.uid);
+          // var memoRef = database.ref('/');
+          console.log(memoRef);
+          memoRef.on('child_added', on_child_added);
+          // memoRef.on('child_added', function(data){
+          //    console.log("data.val()");
+          //    console.log(data.val());
+          // });
+          /*
+          {
+            memos : {
+              uid0 :{ text: 'text', date: "date", title : "title"}
+              uid1 :{ text: 'text', date: "date", title : "title"}
+              uid2 :{ text: 'text', date: "date", title : "title"}
+            }
+          }
+          */
+        }
+
+
+        function on_child_added(data){
+          var key = data.key;
+          var memoData = data.val()
+          console.log("key");
+          console.log(key);
+          console.log("data.val()");
+          console.log(data.val());
+          var firstTxt = memoData;
+          var html =
+            "<li id='"+key+"' class=\"collection-item avatar\" onclick=\"fn_get_data_one(this.id);\" >" +
+            "<i class=\"material-icons circle red\">" + firstTxt + "</i>" +
+            "<span class=\"title\">" + title + "</span>" +
+            "<p class='txt'>" + summary + "<br>" +
+            "</p>" +
+            "</li>";
+        }
       </script>
     </body>
   </html>
