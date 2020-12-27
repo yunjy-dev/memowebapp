@@ -91,7 +91,7 @@
         firebase.analytics();
         
         //Auth
-        var auth, userInfo;
+        var auth, userInfo, selectedKey;
         auth = firebase.auth();
         var authProvider = new firebase.auth.GoogleAuthProvider();
         // auth.signInWithPopup(authProvider);
@@ -141,8 +141,8 @@
           var key = data.key;
           var memoData = data.val()
           var txt = memoData.txt;
-          var title = memoData.title;
-          var firstTxt = memoData.txt.substr(0, 1);
+          var title = txt.substr(0, txt.indexOf('\n'));
+          var firstTxt = txt.substr(0, 1);
           var html =
             "<li id='"+key+"' class=\"collection-item avatar\" onclick=\"fn_get_data_one(this.id);\" >" +
             "<i class=\"material-icons circle red\">" + firstTxt + "</i>" +
@@ -154,16 +154,34 @@
             $(".collection").append(html);
         }
 
+        function fn_get_data_one(key){
+          selectedKey = key;
+          var memoRef = database.ref('memos/'+userInfo.uid+'/'+key).once('value').then(function(snapshot){
+            $(".textarea").val(snapshot.val().txt);
+          }); //once는 promise를 return
+        }
 
         function save_data(){
           var memoRef = database.ref('memos/'+userInfo.uid);
           var txt = $(".textarea").val()
 
-          //push
-          memoRef.push({
+          if(txt ==''){
+            return;
+          }
+          if(selectedKey){
+            memoRef = database.ref('memos/'+userInfo.uid+'/'+selectedKey);
+            memoRef.update({
+              txt : txt,
+              updaateDate: new Date().getTime(),
+            });
+          } else{
+            //push
+            memoRef.push({
             txt : txt,
             createDate: new Date().getTime()
           })
+          }
+          
         }
 
         $(function(){
