@@ -140,19 +140,38 @@
         function on_child_added(data){
           var key = data.key;
           var memoData = data.val()
-          console.log("key");
-          console.log(key);
-          console.log("data.val()");
-          console.log(data.val());
-          var firstTxt = memoData;
+          var txt = memoData.txt;
+          var title = memoData.title;
+          var firstTxt = memoData.txt.substr(0, 1);
           var html =
             "<li id='"+key+"' class=\"collection-item avatar\" onclick=\"fn_get_data_one(this.id);\" >" +
             "<i class=\"material-icons circle red\">" + firstTxt + "</i>" +
             "<span class=\"title\">" + title + "</span>" +
-            "<p class='txt'>" + summary + "<br>" +
+            "<p class='txt'>" + txt + "<br>" +
             "</p>" +
             "</li>";
+
+            $(".collection").append(html);
         }
+
+
+        function save_data(){
+          var memoRef = database.ref('memos/'+userInfo.uid);
+          var txt = $(".textarea").val()
+
+          //push
+          memoRef.push({
+            txt : txt,
+            createDate: new Date().getTime()
+          })
+        }
+
+        $(function(){
+          $(".textarea").blur(function(){
+            save_data();
+          });
+        });
+
       </script>
     </body>
   </html>
