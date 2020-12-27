@@ -178,6 +178,7 @@
           var memoRef = database.ref('memos/'+userInfo.uid+'/'+key);
           memoRef.remove();
           $("#"+key).remove();
+          initMemo();
         }
 
         function save_data(){
