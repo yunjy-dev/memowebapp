@@ -159,6 +159,7 @@
             "<span class=\"title\">" + title + "</span>" +
             "<p class='txt'>" + txt + "<br>" +
             "</p>" +
+            "<a href=\"#!\" onclick=\"fn_delete_data('"+key+"')\" class=\"secondary-content\"><i class=\"material-icons\">grade</i></a>"+
             "</li>";
 
             $(".collection").prepend(html);
@@ -169,6 +170,14 @@
           var memoRef = database.ref('memos/'+userInfo.uid+'/'+key).once('value').then(function(snapshot){
             $(".textarea").val(snapshot.val().txt);
           }); //once는 promise를 return
+        }
+        function fn_delete_data(key){
+          if(!confirm('삭제하시겠습니까?')){
+            return;
+          }
+          var memoRef = database.ref('memos/'+userInfo.uid+'/'+key);
+          memoRef.remove();
+          $("#"+key).remove();
         }
 
         function save_data(){
